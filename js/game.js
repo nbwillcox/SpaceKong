@@ -80,17 +80,21 @@
   function updatePlayer(dt) {
     const p = Game.p, st = Game.st, dx = I.dx, dy = I.dy;
     p.anim += dt; p.moving = false;
-    if (p.hammer > 0) { p.hammer -= dt; p.swing += dt * 12; }
+    if (p.hammer > 0) { p.hammer -= dt; p.swing += dt * 12; if (!S.reduced && Math.random() < dt * 14) FX.sparks(wx(p.x + p.face * 11), wy(p.y - 12), 2, 50, 'rgba(255,230,120,1)', 0.3, 1.2); }
     if (p.state === 'ground') {
       const g = p.g;
-      if (dx) { p.x += dx * C.SPEED * dt; p.face = dx; p.moving = true; }
+      if (dx) {
+        p.x += dx * C.SPEED * dt; p.face = dx; p.moving = true;
+        p.stepFx = (p.stepFx || 0) - dt;
+        if (p.stepFx <= 0 && !S.reduced) { p.stepFx = 0.16; FX.sparks(wx(p.x - dx * 2), wy(p.y) - 2, 2, 28, 'rgba(190,210,255,0.8)', 0.3, 1.2); }
+      }
       if (g.v) p.x += g.v * dt;
       if (g.lift) { /* ride it */ }
       if (p.x < g.x1 - 1 || p.x > g.x2 + 1) {                                 /* walked off the end */
         p.state = 'air'; p.vy = 0; p.vx = dx * C.SPEED * 0.6; p.peak = p.y;
       } else { p.x = U.clamp(p.x, g.x1, g.x2); p.y = g.at(p.x); }
       if (p.state === 'ground') {
-        if (I.takeJump() && p.hammer <= 0) { p.state = 'air'; p.vy = C.JUMP_V; p.vx = dx * C.SPEED; p.peak = p.y; p.jumped = new Set(); A.sfx.jump(); }
+        if (I.takeJump() && p.hammer <= 0) { p.state = 'air'; p.vy = C.JUMP_V; p.vx = dx * C.SPEED; p.peak = p.y; p.jumped = new Set(); A.sfx.jump(); if (!S.reduced) { FX.sparks(wx(p.x), wy(p.y) - 2, 6, 60, 'rgba(255,220,140,0.9)', 0.3, 1.3); FX.ring(wx(p.x), wy(p.y) - 1, 2, 14, 'rgba(160,200,255,0.5)', 0.25, 1.4); } }
         else if (dy && p.hammer <= 0) { const L = ladderNear(p, dy); if (L) { p.state = 'ladder'; p.lad = L; p.x = L.x; } }
       }
     } else if (p.state === 'ladder') {
@@ -111,7 +115,7 @@
           if (prev <= gy + 0.8 && p.y >= gy) {
             const drop = gy - p.peak;
             if (drop > C.DEADLY_DROP && !G0.god) { p.y = gy; p.state = 'ground'; p.g = g; Game.die('fell'); return; }
-            p.state = 'ground'; p.g = g; p.y = gy; p.vx = 0; p.vy = 0; A.sfx.land(); Game.jumpCombo = 0;
+            p.state = 'ground'; p.g = g; p.y = gy; p.vx = 0; p.vy = 0; A.sfx.land(); Game.jumpCombo = 0; if (!S.reduced) { FX.sparks(wx(p.x), wy(gy) - 2, 5, 50, 'rgba(190,210,255,0.8)', 0.3, 1.2); FX.ring(wx(p.x), wy(gy) - 1, 2, 16, 'rgba(160,200,255,0.4)', 0.25, 1.3); }
             break;
           }
         }
@@ -326,8 +330,8 @@
     updatePlayer(dt);
     if (Game.phase !== 'play') return;
     updateDK(dt);
-    for (const b of Game.barrels) updateBarrel(b, dt);
-    for (const f of Game.fires) updateFire(f, dt);
+    for (const b of Game.barrels) { updateBarrel(b, dt); if (!S.reduced && b.state === 'roll' && Math.random() < dt * 16) FX.sparks(wx(b.x - b.dir * 4), wy(b.y + 4), 1, 26, 'rgba(255,170,70,0.9)', 0.3, 1.1); }
+    for (const f of Game.fires) { updateFire(f, dt); if (!S.reduced && Math.random() < dt * 9) FX.sparks(wx(f.x), wy(f.y - 6), 1, 30, f.frozen > 0 ? 'rgba(160,220,255,0.9)' : 'rgba(255,140,50,0.9)', 0.5, 1.1); }
     for (const pi of Game.pies) updatePie(pi, dt);
     for (const sp of Game.springs) updateSpring(sp, dt);
     if (p.hammer > 0) {
