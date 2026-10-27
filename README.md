@@ -19,6 +19,10 @@ Everything is generated in code: the girders, ape, astronaut and hazards are vec
 
 Play in portrait. A floating stick on the lower left walks and climbs ladders (push up or down next to one), and **JUMP** is on the right. The pause button opens the menu. The on-screen controls appear on touch devices automatically; Settings has size, opacity and a left-handed layout. Use your browser's *Add to Home Screen* to install it as a full-screen app.
 
+### Controller
+
+Plug in a gamepad and it just works: the stick or D-pad walks and climbs ladders, **A / B / X** jumps, **Start** pauses. In menus the D-pad / left stick moves the highlight, **A** selects, **B** goes back and **Start** plays or resumes. **Settings -> Controller** has a dead-zone slider and lets you remap every button.
+
 ## The four stages
 
 1. **The Girders:** the ape rolls drums down a zigzag of sloping girders. They roll down ladders now and then, and the ones that reach the oil drum at the bottom can light a fireball.
